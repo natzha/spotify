@@ -1,7 +1,7 @@
-import { getStoredAccessTokens, checkExpiryPKCE, getCCStoredAccessTokens, clientCredential } from "../src/auth";
+import { getStoredAccessTokens, checkExpiryPKCE, getCCStoredAccessTokens, clientCredential, logout } from "../src/auth";
 import { getPlaylistTracksData, getTopArtistsData, getTopTracksData } from "../src/spotifyApi"
 import { isAnyPropertyEmpty } from "../src/utils";
-import { createLoginButton } from "../home/ui";
+import { createLoginButton, createLogoutButton } from "../src/global_ui";
 import { createArtistCountChart, createGeneralStats, createReleaseDateChart, populateArtistCountBar, populateReleaseDateBar, populateReleaseDateScatter } from "./ui";
 
 
@@ -12,12 +12,6 @@ import { createArtistCountChart, createGeneralStats, createReleaseDateChart, pop
 // do thye like listening to albums or individual songs? how many songs from the same album
 // how genre diverse are they? - use artist genre
 // popularity as a dot chart
-
-
-//DONE
-// do they like new songs or old songs <- use release date from album - column graph
-// do they like indie songs or do they follow pop trends - average the popularity
-
 
 
 function anaylseGeneralStats(name: string, tracks) {
@@ -227,6 +221,8 @@ async function main() {
 
     anaylseGeneralStats("top-tracks", topTracksData);
     analyseTrackDateBar("top-tracks", topTracksData);
+
+    createLogoutButton(logout);
 }
 
 

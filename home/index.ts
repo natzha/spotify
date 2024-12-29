@@ -8,10 +8,11 @@ import {
     populateProfile,
     populateAlbums,
     createProfile, populateUI,
-    createLoginButton,
     createStatsButton
 } from './ui';
-import { getStoredAccessTokens, clientCredential, getCCStoredAccessTokens, checkExpiryPKCE } from '../src/auth';
+import { createLoginButton, createLogoutButton } from "../src/global_ui";
+
+import { getStoredAccessTokens, clientCredential, getCCStoredAccessTokens, checkExpiryPKCE, logout } from '../src/auth';
 // import { fetchProfile, getTop, getNewReleases, getPlaylistTracks } from '../src/spotifyApi';
 // import { storeAccessTokens, getStoredAccessTokens, getCCStoredAccessTokens, clientCredential, checkExpiryPKCE } from '../src/auth';
 
@@ -47,6 +48,7 @@ async function main() {
         // } catch {
         //     console.log("Error: Failed to create list for Top Global Tracks");
         // }
+        return;
 
     } else {
         // check if tokens need to be refreshed and get latest
@@ -64,9 +66,8 @@ async function main() {
         // make all profile names show
         populateUI(profile);
         createStatsButton();
+        createLogoutButton(logout);
     }
-
-
 }
 
 

@@ -215,3 +215,13 @@ export async function checkExpiryPKCE(accessToken: AccessToken): Promise<AccessT
     }
     return accessToken;
 }
+
+export async function logout() {
+    storeAccessTokens({
+        access_token: "",
+        expires_in: NaN,
+        refresh_token:  "",
+        scope: "",
+        token_type: "",
+    })
+}

@@ -29,7 +29,6 @@ export function createTrackArtistStats(name, trackArtistStatsInput) {
     return trackArtistStatsDiv
 }
 
-
 export function createGeneralPopularity(name, popularityInput) {
 
     const generalPopularityDiv = document.createElement("div");
@@ -72,9 +71,6 @@ export function createGeneralPopularity(name, popularityInput) {
 
     return generalPopularityDiv;
 }
-
-
-
 
 export function createArtistCountChart(name: string) {
     const chartContainer = document.createElement("div");
@@ -157,63 +153,6 @@ export function populateArtistCountBar(name: string, labels, dataValues) {
             }
         }
     });
-
-
-    // const ctx = document.getElementById('artist-count-canvas') as HTMLCanvasElement;
-    // const chart = new Chart(ctx, {
-    //     type: 'bar', // Change chart type to 'bar' for column graph
-    //     data: {
-    //         labels: labels, // Labels for the x-axis (years)
-    //         datasets: [{
-    //             label: 'Tracks Count',
-    //             data: dataValues, // Number of tracks per year
-    //             backgroundColor: '#1DB954', // Bar color
-    //             borderColor: '#1DB954', // Bar border color
-    //             borderWidth: 1,
-    //         }],
-    //     },
-    //     options: {
-    //         responsive: true,
-    //         scales: {
-    //             x: {
-    //                 title: {
-    //                     display: true,
-    //                     text: 'Year', // Set label to 'Year'
-    //                 },
-    //             },
-    //             y: {
-    //                 beginAtZero: true,
-    //                 title: {
-    //                     display: true,
-    //                     text: 'Number of Tracks',
-    //                 },
-    //             },
-    //         },
-    //         plugins: {
-    //             title: {
-    //                 display: true,
-    //                 text: 'Number of Tracks Released by Year', // Chart title text
-    //                 font: {
-    //                   size: 20, // Set font size for the title
-    //                   weight: 'bold', // Set font weight (bold)
-    //                 },
-    //                 padding: {
-    //                   top: 10, // Padding above the title
-    //                   bottom: 10, // Padding below the title
-    //                 },
-    //             },
-    //             tooltip: {
-    //                 callbacks: {
-    //                     label: function (context) {
-    //                         const label = context.label || '';
-    //                         const count = context.raw;
-    //                         return `${label}: ${count} track${count !== 1 ? 's' : ''}`;
-    //                     },
-    //                 },
-    //             },
-    //         },
-    //     },
-    // });
 }
 
 
