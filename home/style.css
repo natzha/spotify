@@ -1,0 +1,353 @@
+/* Reset some default styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* General body styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  padding: 20px;
+}
+
+/* Title styling */
+h1 {
+  font-size: 2rem;
+  color: #1DB954;
+  /* Spotify Green */
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+}
+
+.button-class {
+  padding: 10px 20px;
+  background-color: #1DB954; /* Green background */
+  color: white; /* White text */
+  font-size: 16px;
+  border: none;
+  border-radius: 5px; /* Optional: rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Button hover effect */
+.button-class:hover {
+  background-color: rgb(27, 156, 27); /* Darker green on hover */
+}
+
+/* Profile section styling */
+#user-top-artists-section,
+#new-album-releases-section,
+#top-global-tracks-section,
+#friendmas-section,
+#profile,
+#top5 {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+}
+
+/* Profile section title */
+#user-top-artists-section h2,
+#new-album-releases-section h2,
+#top-global-tracks-section h2,
+#friendmas-section h2,
+#profile h2,
+#top5 h2 {
+  font-size: 1.5rem;
+  color: #1DB954;
+  margin-bottom: 15px;
+}
+
+/* Avatar styling */
+#avatar {
+  display: block;
+  width: 120px;
+  height: 120px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+/* Styling for the list of data */
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul li {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+/* Styling for links in the lists */
+ul li a {
+  color: #1DB954;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+ul li a:hover {
+  color: #1ed760;
+}
+
+#user-top-artists-list,
+#new-releases-list,
+#friendmas-list,
+#top-50-tracks,
+#track-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  /* Space between items */
+  justify-content: center;
+  /* Align items in the center */
+  padding: 0;
+  list-style-type: none;
+  margin: 0;
+}
+
+#user-top-artists-list li,
+#new-releases-list li,
+#friendmas-list li,
+#top-50-tracks li,
+#track-list li {
+  display: flex;
+  align-items: center;
+  /* Align image and text horizontally */
+  gap: 15px;
+  /* Space between image and text */
+  width: calc(33.333% - 10px);
+  /* Each item takes up 1/3 of the width minus gap space */
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  text-align: left;
+  /* Align text to the left */
+}
+
+#artist-image-div img {
+  width: 150px;
+  height: auto;
+  border-radius: 50%;
+  object-fit: cover;
+  /* Ensure the image covers the container without distortion */
+}
+
+
+/* Image styling */
+#album-image-div img {
+  width: 150px;
+  /* Set the width of the image */
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  /* Ensure the image covers the container without distortion */
+}
+
+/* Track info styling */
+#artist-info,
+#track-info {
+  display: flex;
+  flex-direction: column;
+  /* Stack the track name and artist names vertically */
+  align-items: flex-start;
+  /* Align content to the left (important to fix the issue) */
+  text-align: left;
+  /* Ensure text aligns to the left */
+}
+
+#album-name,
+#track-name {
+  font-weight: bold;
+  /* Make track name bold */
+  font-size: 1.2em;
+  /* Make track name bigger */
+  margin-bottom: 5px;
+  /* Add space between track name and artist names */
+}
+
+#album-name:hover,
+#track-name:hover {
+  text-decoration: underline;
+  /* Add underline on hover */
+}
+
+#artist-name {
+  color: #1EC856;
+  margin-bottom: 5px;
+  /* Add space between artist names */
+}
+
+#artist-name:hover {
+  text-decoration: underline;
+  /* Add underline on hover */
+}
+
+/* Responsive design for medium screens */
+@media (max-width: 1024px) {
+
+  #user-top-artists-list li,
+  #new-releases-list li,
+  #friendmas-list li,
+  #top-50-tracks li,
+  #track-list li {
+    width: calc(50% - 10px);
+    /* On medium screens, items take up 50% of the width */
+  }
+
+  #artist-image-div img,
+  #album-image-div img {
+    max-width: 120px;
+    /* Adjust image size for medium screens */
+  }
+
+  #album-name,
+  #track-name {
+    font-size: 1.1em;
+    /* Slightly smaller text on medium screens */
+  }
+}
+
+/* Responsive design for small screens */
+@media (max-width: 768px) {
+
+  #user-top-artists-list li,
+  #new-releases-list li,
+  #friendmas-list li,
+  #top-50-tracks li,
+  #track-list li {
+    width: calc(100% - 10px);
+    /* On small screens, each item takes up 100% of the width */
+    flex-direction: row;
+    /* Ensure the layout is still horizontal on small screens */
+    align-items: center;
+    /* Keep elements aligned horizontally */
+  }
+
+  #artist-image-div img,
+  #album-image-div img {
+    max-width: 100px;
+    /* Adjust image size for small screens */
+  }
+
+  #artist-info,
+  #track-info {
+    text-align: left;
+    /* Ensure track info is aligned to the left on small screens */
+  }
+
+  #album-name,
+  #track-name {
+    font-size: 1em;
+    /* Make track name a bit smaller on small screens */
+  }
+}
+
+/* Very small screens (e.g., very narrow devices like mobile phones) */
+@media (max-width: 480px) {
+
+  #user-top-artists-list,
+  #new-releases-list li,
+  #friendmas-list li,
+  #top-50-tracks li,
+  #track-list li {
+    width: 100%;
+    /* Items take up full width on very small screens */
+    flex-direction: row;
+    /* Keep layout horizontal on very small screens */
+    align-items: center;
+    /* Keep elements aligned horizontally */
+  }
+
+  #artist-image-div img,
+  #album-image-div img {
+    max-width: 80px;
+    /* Adjust image size for very small screens */
+  }
+
+  #album-name,
+  #track-name {
+    font-size: 0.9em;
+    /* Slightly smaller text for very small screens */
+  }
+}
+
+.slider-holder {
+  padding: 15px
+}
+
+#slider-div {
+  padding: 15px 50px 15px 50px;
+}
+
+/* Style the slider container */
+#slider-duration,
+#slider-num-items {
+  -webkit-appearance: none;
+  /* Removes default styling in WebKit-based browsers (Safari, Chrome) */
+  appearance: none;
+  /* Removes default styling in non-WebKit browsers */
+  width: 100%;
+  /* Full width of its container */
+  height: 8px;
+  /* Slider track height */
+  background: grey;
+  /* Spotify Black for the track */
+  border-radius: 4px;
+  /* Rounded corners for the track */
+  outline: none;
+  /* Removes the outline when focused */
+  transition: background-color 0.1s ease;
+  /* Smooth transition on hover/focus */
+}
+
+/* Style the slider thumb (the knob you slide) */
+#slider-duration::-webkit-slider-thumb,
+#slider-num-items::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  /* Thumb width */
+  height: 20px;
+  /* Thumb height */
+  border-radius: 50%;
+  /* Circular thumb */
+  background: #1DB954;
+  /* Spotify Green color for the thumb */
+  border: 2px solid #191414;
+  /* Black border to contrast with the green */
+  cursor: pointer;
+  /* Pointer cursor on hover */
+  transition: background-color 0.1s ease;
+  /* Smooth transition for thumb on hover */
+}
+
+/* Firefox styling */
+#slider-duration::-moz-range-thumb,
+#slider-num-items::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #1DB954;
+  border: 2px solid #191414;
+  cursor: pointer;
+}
