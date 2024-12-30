@@ -158,7 +158,10 @@ export async function refreshAccessTokenPKCE(clientId: string, refresh_token: st
     });
 
     if (!response.ok) {
-        throw new Error(`Failed to refresh access token: ${response.statusText}`);
+        console.log(`Error: Failed to refresh access token: ${response.statusText}`)
+        logout();
+        window.location.href = "/spotify/login/";
+        // throw new Error(`Failed to refresh access token: ${response.statusText}`);
     }
 
     const access_token = await response.json();
