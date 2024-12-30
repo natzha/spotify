@@ -1,12 +1,17 @@
-import { getStoredAccessTokens, checkExpiryPKCE, getCCStoredAccessTokens,
-    clientCredential, logout } from "../src/auth";
-import { getPlaylistTracksData, getTopArtistsData, getTopTracksData } from "../src/spotifyApi"
-import { isAnyPropertyEmpty } from "../src/utils";
-import { createLoginButton, createLogoutButton } from "../src/global_ui";
-import { createArtistCountChart, createGeneralStats, createReleaseDateChart,
-    populateArtistCountBar, populateReleaseDateBar, populateReleaseDateScatter 
-} from "./ui";
-
+import {
+    checkExpiryPKCE, clientCredential, getCCStoredAccessTokens,
+    getStoredAccessTokens, logout
+} from '../src/auth';
+import { createLoginButton, createLogoutButton } from '../src/global_ui';
+import {
+    getPlaylistTracksData, getTopArtistsData, getTopTracksData
+} from '../src/spotifyApi';
+import { isAnyPropertyEmpty } from '../src/utils';
+import {
+    createArtistCountChart, createGeneralStats, createReleaseDateChart,
+    createTrackArtistStats, populateArtistCountBar, populateReleaseDateBar,
+    populateReleaseDateScatter
+} from './ui';
 
 // sort by artists
 // sort by popularity
@@ -19,36 +24,42 @@ import { createArtistCountChart, createGeneralStats, createReleaseDateChart,
 
 function anaylseGeneralStats(name: string, tracks) {
     const popularityInput = analyseTrackPopularity(tracks);
-    const trackArtistStatsInput = analyseTrackArtists(tracks);
-
-    createGeneralStats(name, popularityInput, trackArtistStatsInput);
-
-    const labels = Object.keys(trackArtistStatsInput.artist_track_count);
-    const dataValues = Object.values(trackArtistStatsInput.artist_track_count);
-    createArtistCountChart(name);
-    populateArtistCountBar(name, labels, dataValues);
+    createGeneralStats(name, popularityInput);
     return
 }
 
-function analyseTrackArtists(tracks) {
+function analyseTrackArtists(name: string, tracks) {
     const artistTrackCount = getArtistTrackCount(tracks);
 
-    var maxTracks = 0;
-    var maxArtist = "";
+    // artist name as labels, track count as datavalues
+    const labels = Object.keys(artistTrackCount);
+    const dataValues = Object.values(artistTrackCount);
 
-    // Find the artist with the maximum number of tracks
-    for (let artist in artistTrackCount) {
-        if (artistTrackCount[artist] > maxTracks) {
-            maxTracks = artistTrackCount[artist];
-            maxArtist = artist;
-        }
-    }
+    // Sort the artists by the number of tracks in descending order
+    const sortedData = labels.map((artist, index) => ({
+        artist,
+        tracks: dataValues[index]
+    })).sort((a, b) => b.tracks - a.tracks); 
 
+    // Reorganize sorted data for Chart.js
+    const sortedLabels = sortedData.map(item => item.artist);
+    const sortedDataValues = sortedData.map(item => item.tracks);
+
+    // store all data in usable
     const trackArtistStatsInput = {
-        "most_freq_artist": maxArtist,
-        "most_freq_count": maxTracks,
+        "most_freq_artist": sortedLabels[0],
+        "most_freq_count": sortedDataValues[0],
         "artist_track_count": artistTrackCount,
+        "labels": labels,
+        "dataValues": dataValues,
+        "sortedLabels": sortedLabels,
+        "sortedDataValues": sortedDataValues,
     };
+
+    // get how many tracks by the same artists and graph
+    createTrackArtistStats(name, trackArtistStatsInput);
+    createArtistCountChart(name);
+    populateArtistCountBar(name, trackArtistStatsInput);
     return trackArtistStatsInput;
 }
 
@@ -73,7 +84,9 @@ function getArtistTrackCount(tracks) {
 }
 
 function analyseTrackPopularity(tracks) {
-    const popularityArray = tracks.map(track => track.popularity);
+
+    //sort popularity and song
+    const popularityArray = tracks.map(track => { track.popularity });
 
     // get average popularity
     const average = array => array.reduce((a, b) => a + b) / array.length;
@@ -90,6 +103,16 @@ function analyseTrackPopularity(tracks) {
         return prev.popularity < curr.popularity ? prev : curr;
     });
     const popularityMin = min(tracks);
+
+    // place into x and y
+    // const data = tracks.map((track) => ({
+    //     x: parseReleaseDate(track.album.release_date).getTime(),
+    //     y: 1,
+    //     name: track.name,
+    //     artists: track.artists.map(artist => artist.name).join(', '),
+    //     date: track.album.release_date,
+    // }));
+
 
     const popularityInput = {
         "average": popularityAverage,
@@ -159,7 +182,7 @@ function analyseTrackDateBar(name: string, tracks) {
 
     // Generate all years between the earliest and latest release dates
     const allYears = generateAllYears(
-        new Date(startDate).toISOString(), 
+        new Date(startDate).toISOString(),
         new Date(endDate).toISOString()
     );
 
@@ -203,6 +226,7 @@ async function main() {
         const friendmasPlaylistTracksData = await getPlaylistTracksData(
             ccAccessToken.access_token, "7y74PC03oAdN1LVA5fYN2q", 50)
         anaylseGeneralStats("friendsmas", friendmasPlaylistTracksData);
+        analyseTrackArtists("friendsmas", friendmasPlaylistTracksData);
         analyseTrackDateBar("friendsmas", friendmasPlaylistTracksData);
 
         return;
@@ -216,6 +240,7 @@ async function main() {
     const topArtistsData = await getTopArtistsData(accessToken, 200, 3);
 
     anaylseGeneralStats("top-tracks", topTracksData);
+    analyseTrackArtists("top-tracks", topTracksData)
     analyseTrackDateBar("top-tracks", topTracksData);
 
     createLogoutButton(logout);

@@ -4,35 +4,33 @@ import 'chartjs-adapter-luxon'; // Import and register Luxon date adapter
 // Register all the necessary components of Chart.js (including the time scale)
 Chart.register(...registerables);
 
-export function createGeneralStats(name, popularityInput, trackArtistStatsInput) {
+export function createGeneralStats(name, popularityInput) {
     const generalStatsDiv = document.createElement("div");
-    generalStatsDiv.id = name + "general-stats-div";
-
+    generalStatsDiv.id = name + "-general-stats-div";
 
     const popularityDiv = createGeneralPopularity(name, popularityInput);
-    const trackArtistStatsDiv = createTrackArtistStats(name, trackArtistStatsInput);
 
     generalStatsDiv.appendChild(popularityDiv);
-    generalStatsDiv.appendChild(trackArtistStatsDiv);
     document.body.appendChild(generalStatsDiv);
 }
 
-export function createTrackArtistStats(name, trackArtistStatsInput) {
+export function createTrackArtistStats(name: string, trackArtistStatsInput) {
     const trackArtistStatsDiv = document.createElement("div");
-    trackArtistStatsDiv.id = name + "track-artist-stats-div";
+    trackArtistStatsDiv.id = name + "-track-artist-stats-div";
 
     var textCont = "";
     textCont += "Most Frequent Artist: " + trackArtistStatsInput.most_freq_artist,
         textCont += " who you listened to " + trackArtistStatsInput.most_freq_count + " songs";
     trackArtistStatsDiv.textContent = textCont;
 
+    document.body.appendChild(trackArtistStatsDiv);
     return trackArtistStatsDiv
 }
 
 export function createGeneralPopularity(name, popularityInput) {
 
     const generalPopularityDiv = document.createElement("div");
-    generalPopularityDiv.id = name + "general-popularity-div";
+    generalPopularityDiv.id = name + "-general-popularity-div";
 
     const popAvg = document.createElement("div");
     var exclaim = ". ";
@@ -76,7 +74,7 @@ export function createArtistCountChart(name: string) {
     const chartContainer = document.createElement("div");
     chartContainer.className = "chart-container";
     const chartCanvas = document.createElement("canvas");
-    chartCanvas.id = name + "artist-count-canvas";
+    chartCanvas.id = name + "-artist-count-canvas";
 
     const chartDiv = document.createElement("div");
     chartDiv.id = name + "artist-count-div";
@@ -98,26 +96,15 @@ export function createArtistCountChart(name: string) {
     document.body.appendChild(chartDiv);
 }
 
-export function populateArtistCountBar(name: string, labels, dataValues) {
-
-    // Sort the artists by the number of tracks in descending order
-    const sortedData = labels.map((artist, index) => ({
-        artist,
-        tracks: dataValues[index]
-    })).sort((a, b) => b.tracks - a.tracks); // Sort by 'tracks' in descending order
-
-    // Reorganize sorted data for Chart.js
-    const sortedLabels = sortedData.map(item => item.artist); // Sorted artist names
-    const sortedDataValues = sortedData.map(item => item.tracks); // Sorted track counts
-
-    const ctx = document.getElementById(name + 'artist-count-canvas') as HTMLCanvasElement;
+export function populateArtistCountBar(name: string, trackArtistStatsInput) {
+    const ctx = document.getElementById(name + '-artist-count-canvas') as HTMLCanvasElement;
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: sortedLabels, // X-axis: artist names
+            labels: trackArtistStatsInput.sortedLabels, // X-axis: artist names
             datasets: [{
                 label: 'Number of Tracks',
-                data: sortedDataValues, // Y-axis: number of tracks per artist
+                data: trackArtistStatsInput.sortedDataValues, // Y-axis: number of tracks per artist
                 backgroundColor: '#1DB954', // Bar color
                 borderColor: '#1DB954', // Bar border color
                 borderWidth: 1
