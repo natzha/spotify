@@ -1,65 +1,63 @@
-import { getStoredAccessTokens, checkExpiryPKCE, getCCStoredAccessTokens, clientCredential } from "../src/auth";
-import { getPlaylistTracksData, getTopArtistsData, getTopTracksData } from "../src/spotifyApi"
-import { isAnyPropertyEmpty } from "../src/utils";
-import { createLoginButton } from "../home/ui";
-import { createArtistCountChart, createGeneralStats, createReleaseDateChart, populateArtistCountBar, populateReleaseDateBar, populateReleaseDateScatter } from "./ui";
-
+import {
+    checkExpiryPKCE, clientCredential, getCCStoredAccessTokens,
+    getStoredAccessTokens, logout
+} from '../src/auth';
+import { createLoginButton, createLogoutButton } from '../src/global_ui';
+import {
+    getPlaylistTracksData, getTopArtistsData, getTopTracksData
+} from '../src/spotifyApi';
+import { isAnyPropertyEmpty } from '../src/utils';
+import {
+    createArtistGenreStats, createGeneralStats, createReleaseDateChart,
+    createTrackArtistStats, populateArtistCountBar, populateGenreCountBar,
+    populateReleaseDateBar, populateReleaseDateScatter
+} from './ui';
 
 // sort by artists
 // sort by popularity
 
 // do they hard listen to one artist or many artists? how many songs from the same artist - pie chart?
 // do thye like listening to albums or individual songs? how many songs from the same album
-// how genre diverse are they? - use artist genre
-// popularity as a dot chart
-
-
-//DONE
-// do they like new songs or old songs <- use release date from album - column graph
-// do they like indie songs or do they follow pop trends - average the popularity
-
+// popularity against artists songs played as a dot chart
 
 
 function anaylseGeneralStats(name: string, tracks) {
-
     const popularityInput = analyseTrackPopularity(tracks);
-    const trackArtistStatsInput = analyseTrackArtists(tracks);
-
-    createGeneralStats(name, popularityInput, trackArtistStatsInput);
-
-    const labels = Object.keys(trackArtistStatsInput.artist_track_count);
-    const dataValues = Object.values(trackArtistStatsInput.artist_track_count);
-    createArtistCountChart(name);
-    populateArtistCountBar(name, labels, dataValues);
-    console.log("analyse track artists3");
-    return
+    createGeneralStats(name, popularityInput);
+    return;
 }
 
-function analyseTrackArtists(tracks) {
+function analyseTrackArtists(name: string, tracks) {
     const artistTrackCount = getArtistTrackCount(tracks);
 
-    var maxTracks = 0;
-    var maxArtist = "";
+    // artist name as labels, track count as datavalues
+    const labels = Object.keys(artistTrackCount);
+    const dataValues = Object.values(artistTrackCount);
 
-    // Find the artist with the maximum number of tracks
-    for (let artist in artistTrackCount) {
-        if (artistTrackCount[artist] > maxTracks) {
-            maxTracks = artistTrackCount[artist];
-            maxArtist = artist;
-        }
-    }
+    // Sort the artists by the number of tracks in descending order
+    const sortedData = labels.map((artist, index) => ({
+        artist,
+        tracks: dataValues[index]
+    })).sort((a, b) => b.tracks - a.tracks);
 
-    console.log("artist to track: ", getArtistTrackCount(tracks));
+    // Reorganize sorted data for Chart.js
+    const sortedLabels = sortedData.map(item => item.artist).slice(0, 20);
+    const sortedDataValues = sortedData.map(item => item.tracks).slice(0, 20);
+
+    // store all data in usable
     const trackArtistStatsInput = {
-        "most_freq_artist": maxArtist,
-        "most_freq_count": maxTracks,
+        "most_freq_artist": sortedLabels[0],
+        "most_freq_count": sortedDataValues[0],
         "artist_track_count": artistTrackCount,
+        "labels": labels,
+        "dataValues": dataValues,
+        "sortedLabels": sortedLabels,
+        "sortedDataValues": sortedDataValues,
     };
 
-
-
-
-    return trackArtistStatsInput;
+    // get how many tracks by the same artists and graph
+    createTrackArtistStats(name, trackArtistStatsInput);
+    populateArtistCountBar(name, trackArtistStatsInput);
 }
 
 function getArtistTrackCount(tracks) {
@@ -82,7 +80,70 @@ function getArtistTrackCount(tracks) {
     return artistTrackCount;
 }
 
+function analyseArtistGenres(name: string, artists) {
+    const artistGenreCount = getArtistGenreCount(artists);
+
+    // artist name as labels, track count as datavalues
+    const labels = Object.keys(artistGenreCount);
+    const dataValues = Object.values(artistGenreCount);
+
+    // sort the genres by number of artists in descending order
+    const sortedData = labels.map((genre, index) => ({
+        genre,
+        numArtists: dataValues[index]
+    })).sort((a, b) => b.numArtists - a.numArtists);
+
+    // Reorganize sorted data for Chart.js
+    const sortedLabels = sortedData.map(item => item.genre).slice(0, 30);
+    const sortedDataValues = sortedData.map(item => item.numArtists).slice(0, 30);
+
+    // // Group remaining elements and sum their values
+    // const remainingValues = sortedData.map(item => item.numArtists).slice(29);
+    // const summedRestValue = remainingValues.reduce((accumulator, currentValue) => {
+    //     return accumulator + currentValue
+    // },0);
+
+    // sortedLabels.push("Others");
+    // sortedDataValues.push(summedRestValue);
+
+    // store all data in usable
+    const artistGenreStatsInput = {
+        "most_freq_artist": sortedLabels[0],
+        "most_freq_count": sortedDataValues[0],
+        "artist_track_count": artistGenreCount,
+        "labels": labels,
+        "dataValues": dataValues,
+        "sortedLabels": sortedLabels,
+        "sortedDataValues": sortedDataValues,
+    };
+
+    // get how many tracks by the same artists and graph
+    createArtistGenreStats(name, artistGenreStatsInput);
+    populateGenreCountBar(name, artistGenreStatsInput);
+}
+
+
+function getArtistGenreCount(artists) {
+    const artistGenreCount = {};
+
+    // Loop through each artist
+    artists.forEach(artist => {
+        // Increment the count for the genre, artist can have multiple genres
+        const genresInArtist = artist.genres;
+        if (genresInArtist === undefined) { return; }
+
+        // Increment the count for each artist that appeared in the track
+        genresInArtist.forEach(genre => {
+            artistGenreCount[genre] = (artistGenreCount[genre] || 0) + 1;
+        });
+        // artistGenreCount[genresInArtist] = (artistGenreCount[genresInArtist] || 0) + 1;
+    });
+
+    return artistGenreCount;
+}
+
 function analyseTrackPopularity(tracks) {
+    //sort popularity and song
     const popularityArray = tracks.map(track => track.popularity);
 
     // get average popularity
@@ -154,10 +215,6 @@ function generateAllYears(startDate: string, endDate: string): string[] {
     return years;
 }
 
-
-
-
-
 function analyseTrackDateBar(name: string, tracks) {
     // Group the tracks by year and count the number of tracks in each year
     const groupedData = tracks.reduce((acc, track) => {
@@ -172,10 +229,13 @@ function analyseTrackDateBar(name: string, tracks) {
     const endDate = Math.max(...allReleaseDates.map(date => new Date(date).getTime()));
 
     // Generate all years between the earliest and latest release dates
-    const allYears = generateAllYears(new Date(startDate).toISOString(), new Date(endDate).toISOString());
+    const allYears = generateAllYears(
+        new Date(startDate).toISOString(),
+        new Date(endDate).toISOString()
+    );
 
     // For each year, either use the count from `groupedData` or set it to 0 if no tracks
-    const labels = allYears.sort();  // Sort the years in ascending order
+    const labels = allYears.sort();
     const dataValues = labels.map(label => groupedData[label]);
 
     createReleaseDateChart(name);
@@ -211,8 +271,10 @@ async function main() {
         const ccAccessToken = getCCStoredAccessTokens();
 
         // friendmas stats
-        const friendmasPlaylistTracksData = await getPlaylistTracksData(ccAccessToken.access_token, "7y74PC03oAdN1LVA5fYN2q", 50)
+        const friendmasPlaylistTracksData = await getPlaylistTracksData(
+            ccAccessToken.access_token, "7y74PC03oAdN1LVA5fYN2q", 50)
         anaylseGeneralStats("friendsmas", friendmasPlaylistTracksData);
+        analyseTrackArtists("friendsmas", friendmasPlaylistTracksData);
         analyseTrackDateBar("friendsmas", friendmasPlaylistTracksData);
 
         return;
@@ -223,10 +285,16 @@ async function main() {
 
     // get users top 250 songs and artists
     const topTracksData = await getTopTracksData(accessToken, 200, 3);
+    console.log("top tracks: ", topTracksData);
     const topArtistsData = await getTopArtistsData(accessToken, 200, 3);
+    console.log("top artsts: ", topArtistsData);
 
     anaylseGeneralStats("top-tracks", topTracksData);
+    analyseTrackArtists("top-tracks", topTracksData);
+    analyseArtistGenres("top-tracks", topArtistsData);
     analyseTrackDateBar("top-tracks", topTracksData);
+
+    createLogoutButton(logout);
 }
 
 

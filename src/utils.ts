@@ -41,20 +41,21 @@ export function getAuthorisationCode() {
 
 export function isAnyPropertyEmpty<T>(obj: T): boolean {
     for (let key in obj) {
-      const value = obj[key];
+        const value = obj[key];
   
-      // Check if the value is "null" (string), null, undefined, an empty object, an empty array, or an empty string
-      if (
-        value === "undefined" ||  // If the value is the string "null"
-        value === "null" ||  // If the value is the string "null"
-        value === null ||    // If the value is actual null
-        value === undefined || // If the value is undefined
-        (typeof value === 'object' && Object.keys(value).length === 0) || // Empty object
-        (Array.isArray(value) && value.length === 0) || // Empty array
-        (typeof value === 'string' && value.trim() === '') // Empty string
-      ) {
-        return true;  // Return true if any property is empty
-      }
+        // Check if the value is "null" (string), null, undefined, an empty
+        // object, an empty array, or an empty string
+        if (
+            value === "undefined" ||
+            value === "null" ||
+            value === null ||
+            value === undefined ||
+            (typeof value === 'object' && Object.keys(value).length === 0) ||
+            (Array.isArray(value) && value.length === 0) ||
+            (typeof value === 'string' && value.trim() === '')
+        ) {
+            return true;
+        }
     }
-    return false;  // Return false if no empty properties
-  }
+    return false;
+}

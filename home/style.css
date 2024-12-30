@@ -22,33 +22,6 @@ h1 {
   margin-bottom: 30px;
 }
 
-.button-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  padding: 15px;
-}
-
-.button-class {
-  padding: 10px 20px;
-  background-color: #1DB954; /* Green background */
-  color: white; /* White text */
-  font-size: 16px;
-  border: none;
-  border-radius: 5px; /* Optional: rounded corners */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s; /* Smooth transition for hover effect */
-  justify-content: center;
-  align-items: center;
-}
-
-/* Button hover effect */
-.button-class:hover {
-  background-color: rgb(27, 156, 27); /* Darker green on hover */
-}
-
 /* Profile section styling */
 #user-top-artists-section,
 #new-album-releases-section,

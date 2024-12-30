@@ -4,36 +4,20 @@ import 'chartjs-adapter-luxon'; // Import and register Luxon date adapter
 // Register all the necessary components of Chart.js (including the time scale)
 Chart.register(...registerables);
 
-export function createGeneralStats(name, popularityInput, trackArtistStatsInput) {
+export function createGeneralStats(name, popularityInput) {
     const generalStatsDiv = document.createElement("div");
-    generalStatsDiv.id = name + "general-stats-div";
-
+    generalStatsDiv.id = name + "-general-stats-div";
+    generalStatsDiv.className = "stats-tile";
 
     const popularityDiv = createGeneralPopularity(name, popularityInput);
-    const trackArtistStatsDiv = createTrackArtistStats(name, trackArtistStatsInput);
 
     generalStatsDiv.appendChild(popularityDiv);
-    generalStatsDiv.appendChild(trackArtistStatsDiv);
     document.body.appendChild(generalStatsDiv);
 }
 
-export function createTrackArtistStats(name, trackArtistStatsInput) {
-    const trackArtistStatsDiv = document.createElement("div");
-    trackArtistStatsDiv.id = name + "track-artist-stats-div";
-
-    var textCont = "";
-    textCont += "Most Frequent Artist: " + trackArtistStatsInput.most_freq_artist,
-        textCont += " who you listened to " + trackArtistStatsInput.most_freq_count + " songs";
-    trackArtistStatsDiv.textContent = textCont;
-
-    return trackArtistStatsDiv
-}
-
-
 export function createGeneralPopularity(name, popularityInput) {
-
     const generalPopularityDiv = document.createElement("div");
-    generalPopularityDiv.id = name + "general-popularity-div";
+    generalPopularityDiv.id = name + "-general-popularity-div";
 
     const popAvg = document.createElement("div");
     var exclaim = ". ";
@@ -73,55 +57,41 @@ export function createGeneralPopularity(name, popularityInput) {
     return generalPopularityDiv;
 }
 
+export function createTrackArtistStats(name: string, trackArtistStatsInput) {
+    const trackArtistStatsDiv = document.createElement("div");
+    trackArtistStatsDiv.id = name + "-track-artist-stats-div";
+    trackArtistStatsDiv.className = "stats-tile";
 
+    // add info
+    const trackArtisteStatsInfo = document.createElement("p");
+    trackArtisteStatsInfo.className = "stats-info"
+    var textCont = "";
+    textCont += "Your Most Frequently Played Artist is " + trackArtistStatsInput.most_freq_artist;
+    textCont += " who you listened to " + trackArtistStatsInput.most_freq_count + " songs!";
+    trackArtisteStatsInfo.textContent = textCont;
 
-
-export function createArtistCountChart(name: string) {
+    // chartjs canvas elements
     const chartContainer = document.createElement("div");
     chartContainer.className = "chart-container";
     const chartCanvas = document.createElement("canvas");
-    chartCanvas.id = name + "artist-count-canvas";
-
-    const chartDiv = document.createElement("div");
-    chartDiv.id = name + "artist-count-div";
-    chartDiv.className = "artist-count-class";
-
-    // const trackName = document.createElement("p");
-    // trackName.id = "artist-count-track-name";
-    // const trackArtists = document.createElement("p");
-    // trackArtists.id = "artist-count-track-artist";
-    // const trackDate = document.createElement("p");
-    // trackDate.id = "artist-count-track-date";
-
-    // chartDiv.appendChild(trackName);
-    // chartDiv.appendChild(trackArtists);
-    // chartDiv.appendChild(trackDate);
+    chartCanvas.id = name + "-artist-count-canvas";
 
     chartContainer.appendChild(chartCanvas)
-    document.body.appendChild(chartContainer)
-    document.body.appendChild(chartDiv);
+    trackArtistStatsDiv.appendChild(chartContainer)
+    trackArtistStatsDiv.appendChild(trackArtisteStatsInfo)
+    document.body.appendChild(trackArtistStatsDiv);
+    return trackArtistStatsDiv
 }
 
-export function populateArtistCountBar(name: string, labels, dataValues) {
-
-    // Sort the artists by the number of tracks in descending order
-    const sortedData = labels.map((artist, index) => ({
-        artist,
-        tracks: dataValues[index]
-    })).sort((a, b) => b.tracks - a.tracks); // Sort by 'tracks' in descending order
-
-    // Reorganize sorted data for Chart.js
-    const sortedLabels = sortedData.map(item => item.artist); // Sorted artist names
-    const sortedDataValues = sortedData.map(item => item.tracks); // Sorted track counts
-
-    const ctx = document.getElementById(name + 'artist-count-canvas') as HTMLCanvasElement;
+export function populateArtistCountBar(name: string, trackArtistStatsInput) {
+    const ctx = document.getElementById(name + '-artist-count-canvas') as HTMLCanvasElement;
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: sortedLabels, // X-axis: artist names
+            labels: trackArtistStatsInput.sortedLabels, // X-axis: artist names
             datasets: [{
                 label: 'Number of Tracks',
-                data: sortedDataValues, // Y-axis: number of tracks per artist
+                data: trackArtistStatsInput.sortedDataValues, // Y-axis: number of tracks per artist
                 backgroundColor: '#1DB954', // Bar color
                 borderColor: '#1DB954', // Bar border color
                 borderWidth: 1
@@ -141,9 +111,10 @@ export function populateArtistCountBar(name: string, labels, dataValues) {
             plugins: {
                 title: {
                     display: true,
-                    text: name.toUpperCase() + ': Number of Tracks for each Artist', // Chart title text
+                    text: name.toUpperCase() + ': How Many Different Songs from Your Favourite Artist You Played',
+                    color: '#1DB954',
                     font: {
-                        size: 20, // Set font size for the title
+                        size: 24, // Set font size for the title
                         weight: 'bold', // Set font weight (bold)
                     },
                     padding: {
@@ -157,67 +128,87 @@ export function populateArtistCountBar(name: string, labels, dataValues) {
             }
         }
     });
-
-
-    // const ctx = document.getElementById('artist-count-canvas') as HTMLCanvasElement;
-    // const chart = new Chart(ctx, {
-    //     type: 'bar', // Change chart type to 'bar' for column graph
-    //     data: {
-    //         labels: labels, // Labels for the x-axis (years)
-    //         datasets: [{
-    //             label: 'Tracks Count',
-    //             data: dataValues, // Number of tracks per year
-    //             backgroundColor: '#1DB954', // Bar color
-    //             borderColor: '#1DB954', // Bar border color
-    //             borderWidth: 1,
-    //         }],
-    //     },
-    //     options: {
-    //         responsive: true,
-    //         scales: {
-    //             x: {
-    //                 title: {
-    //                     display: true,
-    //                     text: 'Year', // Set label to 'Year'
-    //                 },
-    //             },
-    //             y: {
-    //                 beginAtZero: true,
-    //                 title: {
-    //                     display: true,
-    //                     text: 'Number of Tracks',
-    //                 },
-    //             },
-    //         },
-    //         plugins: {
-    //             title: {
-    //                 display: true,
-    //                 text: 'Number of Tracks Released by Year', // Chart title text
-    //                 font: {
-    //                   size: 20, // Set font size for the title
-    //                   weight: 'bold', // Set font weight (bold)
-    //                 },
-    //                 padding: {
-    //                   top: 10, // Padding above the title
-    //                   bottom: 10, // Padding below the title
-    //                 },
-    //             },
-    //             tooltip: {
-    //                 callbacks: {
-    //                     label: function (context) {
-    //                         const label = context.label || '';
-    //                         const count = context.raw;
-    //                         return `${label}: ${count} track${count !== 1 ? 's' : ''}`;
-    //                     },
-    //                 },
-    //             },
-    //         },
-    //     },
-    // });
 }
 
+export function createArtistGenreStats(name: string, artistGenreStatsInput) {
+    const artistGenreStatsDiv = document.createElement("div");
+    artistGenreStatsDiv.id = name + "-artist-genre-stats-div";
+    artistGenreStatsDiv.className = "stats-tile";
+
+    // add info
+    const artistGenreStatsInfo = document.createElement("p");
+    artistGenreStatsInfo.className = "stats-info"
+    var textCont = "";
+    textCont += "Your Most Frequent Genre is " + artistGenreStatsInput.most_freq_artist;
+    textCont += " with " + artistGenreStatsInput.most_freq_count + " of your favourite artists in this genre";
+    artistGenreStatsInfo.textContent = textCont;
+
+    const chartContainer = document.createElement("div");
+    chartContainer.className = "chart-container";
+    const chartCanvas = document.createElement("canvas");
+    chartCanvas.id = name + "-genre-count-canvas";
+
+
+    chartContainer.appendChild(chartCanvas);
+    artistGenreStatsDiv.appendChild(chartContainer);
+    artistGenreStatsDiv.appendChild(artistGenreStatsInfo);
+
+    document.body.appendChild(artistGenreStatsDiv);
+    // return artistGenreStatsDiv;
+}
+
+export function populateGenreCountBar(name: string, artistGenreStatsInput) {
+    const ctx = document.getElementById(name + '-genre-count-canvas') as HTMLCanvasElement;
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: artistGenreStatsInput.sortedLabels, // X-axis: artist names
+            datasets: [{
+                label: 'Number of Artists',
+                data: artistGenreStatsInput.sortedDataValues, // Y-axis: number of tracks per artist
+                // backgroundColor: '#1DB954', // Bar color
+                // borderColor: '#1DB954', // Bar border color
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            // responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true, // Start the Y-axis at 0
+                    ticks: {
+                        stepSize: 1 // Each tick step is 1 for better readability
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: name.toUpperCase() + ': Your Most Listened to Genres',
+                    color: '#1DB954',
+                    font: {
+                        size: 24, // Set font size for the title
+                        weight: 'bold', // Set font weight (bold)
+                    },
+                    padding: {
+                        top: 10, // Padding above the title
+                        bottom: 10, // Padding below the title
+                    },
+                },
+                legend: {
+                    display: true // Display the chart legend
+                }
+            }
+        }
+    });
+}
 
 export function createReleaseDateChart(name: string) {
+    const trackReleaseStatsDiv = document.createElement("div");
+    trackReleaseStatsDiv.id = name + "-track-release-stats-div";
+    trackReleaseStatsDiv.className = "stats-tile";
+
     const chartContainer = document.createElement("div");
     chartContainer.className = "chart-container";
     const chartCanvas = document.createElement("canvas");
@@ -239,8 +230,10 @@ export function createReleaseDateChart(name: string) {
     chartDiv.appendChild(trackDate);
 
     chartContainer.appendChild(chartCanvas);
-    document.body.appendChild(chartContainer);
-    document.body.appendChild(chartDiv);
+    
+    trackReleaseStatsDiv.appendChild(chartContainer);
+    trackReleaseStatsDiv.appendChild(chartDiv);
+    document.body.appendChild(trackReleaseStatsDiv);
 }
 
 export function populateReleaseDateBar(name: string, labels, dataValues) {
@@ -264,7 +257,7 @@ export function populateReleaseDateBar(name: string, labels, dataValues) {
                 x: {
                     title: {
                         display: true,
-                        text: 'Year', // Set label to 'Year'
+                        text: 'Year',
                     },
                 },
                 y: {
@@ -278,14 +271,15 @@ export function populateReleaseDateBar(name: string, labels, dataValues) {
             plugins: {
                 title: {
                     display: true,
-                    text: name.toUpperCase() + ': Number of Tracks Released by Year', // Chart title text
+                    text: name.toUpperCase() + ': When Your Favourite Tracks were Released',
+                    color: '#1DB954',
                     font: {
-                        size: 20, // Set font size for the title
+                        size: 24, // Set font size for the title
                         weight: 'bold', // Set font weight (bold)
                     },
                     padding: {
-                        top: 10, // Padding above the title
-                        bottom: 10, // Padding below the title
+                        top: 10,
+                        bottom: 10,
                     },
                 },
                 tooltip: {
@@ -344,18 +338,22 @@ export function populateReleaseDateScatter(data) {
                 tooltip: {
                     enabled: false, // Disable the default tooltip
                     external: (context) => {
-                        const tooltipEl = document.getElementById('release-date-div') as HTMLElement;
-                        const tooltipName = document.getElementById('release-date-track-name') as HTMLElement;
-                        const tooltipArtists = document.getElementById('release-date-track-artist') as HTMLElement;
-                        const tooltipDate = document.getElementById('release-date-track-date') as HTMLElement;
+                        const tooltipEl = document.getElementById(
+                            'release-date-div') as HTMLElement;
+                        const tooltipName = document.getElementById(
+                            'release-date-track-name') as HTMLElement;
+                        const tooltipArtists = document.getElementById(
+                            'release-date-track-artist') as HTMLElement;
+                        const tooltipDate = document.getElementById(
+                            'release-date-track-date') as HTMLElement;
 
-                        // Check if there are any data points to show
                         // Check if there are any data points to show
                         const dataPoints = context.tooltip.dataPoints;
                         if (dataPoints && dataPoints.length > 0) {
-                            // In a scatter plot, we expect only one data point under the cursor
-                            const dataPoint = dataPoints[0]; // The data point being hovered
-                            const track = data[dataPoint.dataIndex]; // Get the track from the data array using the index
+                            // The data point being hovered
+                            const dataPoint = dataPoints[0];
+                            // Get the track from the data array using the index
+                            const track = data[dataPoint.dataIndex];
 
                             if (track) {
                                 tooltipName.innerHTML = `Track: ${track.name}`;
@@ -369,7 +367,8 @@ export function populateReleaseDateScatter(data) {
                                 console.error('Track not found for index:', dataPoint.dataIndex);
                             }
                         } else {
-                            tooltipEl.style.display = 'none'; // Hide tooltip if no valid data point
+                            // Hide tooltip if no valid data point
+                            tooltipEl.style.display = 'none';
                         }
                     },
                 },
