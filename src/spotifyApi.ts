@@ -29,7 +29,8 @@ export async function fetchProfile(accessToken: AccessToken) {
 }
 
 // Endpoint reference : https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
-export async function getTop(accessToken: AccessToken, type: string, time_range: string, limit: number, offset: number = 0) {
+export async function getTop(accessToken: AccessToken, type: string,
+    time_range: string, limit: number, offset: number = 0) {
     accessToken = await checkExpiryPKCE(accessToken);
     if (limit > 50 || limit < 1) {
         console.log("Warning: limit must be between 1-50, setting default to 10");
@@ -43,7 +44,8 @@ export async function getTop(accessToken: AccessToken, type: string, time_range:
     ));
 }
 
-export async function getTopTracksData(accessToken: AccessToken, numItems: number, numDuration: number) {
+export async function getTopTracksData(accessToken: AccessToken, numItems: number,
+    numDuration: number) {
     const max = 50;
     const offset = Math.floor(numItems / max);
     const limit = numItems % max;
@@ -86,7 +88,8 @@ export async function getTopTracksData(accessToken: AccessToken, numItems: numbe
 }
 
 
-export async function getTopArtistsData(accessToken: AccessToken, numItems: number, numDuration: number) {
+export async function getTopArtistsData(accessToken: AccessToken, numItems:
+    number, numDuration: number) {
     const max = 50;
     const offset = Math.floor(numItems / max);
     const limit = numItems % max;
@@ -152,7 +155,8 @@ export async function getPlaylist(accessToken: AccessToken, playlistId: string) 
 }
 
 // get tracks from playlist
-export async function getPlaylistTracks(token: string, playlistId: string, limit: number = 10, offset: number = 0) {
+export async function getPlaylistTracks(token: string, playlistId: string,
+    limit: number = 10, offset: number = 0) {
     return (await fetchWebApi(
         `v1/playlists/${playlistId}/tracks?offset=${offset}&limit=${limit}`,
         "GET",
@@ -162,7 +166,8 @@ export async function getPlaylistTracks(token: string, playlistId: string, limit
 }
 
 // get tracks from playlist
-export async function getPlaylistTracksData(token: string, playlistId: string, numItems: number) {
+export async function getPlaylistTracksData(token: string, playlistId: string,
+    numItems: number) {
     const max = 50;
     const offset = Math.floor(numItems / max);
     const limit = numItems % max;
@@ -202,7 +207,8 @@ export async function getNewReleases(accessToken: AccessToken, limit: number = 1
     ));
 }
 
-export async function getNewReleasesData(accessToken: AccessToken, numItems: number): Promise<Album[]> {
+export async function getNewReleasesData(accessToken: AccessToken, numItems:
+    number): Promise<Album[]> {
     const max = 50;
     const offset = Math.floor(numItems / max);
     const limit = numItems % max;

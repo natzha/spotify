@@ -1,8 +1,11 @@
-import { getStoredAccessTokens, checkExpiryPKCE, getCCStoredAccessTokens, clientCredential, logout } from "../src/auth";
+import { getStoredAccessTokens, checkExpiryPKCE, getCCStoredAccessTokens,
+    clientCredential, logout } from "../src/auth";
 import { getPlaylistTracksData, getTopArtistsData, getTopTracksData } from "../src/spotifyApi"
 import { isAnyPropertyEmpty } from "../src/utils";
 import { createLoginButton, createLogoutButton } from "../src/global_ui";
-import { createArtistCountChart, createGeneralStats, createReleaseDateChart, populateArtistCountBar, populateReleaseDateBar, populateReleaseDateScatter } from "./ui";
+import { createArtistCountChart, createGeneralStats, createReleaseDateChart,
+    populateArtistCountBar, populateReleaseDateBar, populateReleaseDateScatter 
+} from "./ui";
 
 
 // sort by artists
@@ -15,7 +18,6 @@ import { createArtistCountChart, createGeneralStats, createReleaseDateChart, pop
 
 
 function anaylseGeneralStats(name: string, tracks) {
-
     const popularityInput = analyseTrackPopularity(tracks);
     const trackArtistStatsInput = analyseTrackArtists(tracks);
 
@@ -25,7 +27,6 @@ function anaylseGeneralStats(name: string, tracks) {
     const dataValues = Object.values(trackArtistStatsInput.artist_track_count);
     createArtistCountChart(name);
     populateArtistCountBar(name, labels, dataValues);
-    console.log("analyse track artists3");
     return
 }
 
@@ -43,16 +44,11 @@ function analyseTrackArtists(tracks) {
         }
     }
 
-    console.log("artist to track: ", getArtistTrackCount(tracks));
     const trackArtistStatsInput = {
         "most_freq_artist": maxArtist,
         "most_freq_count": maxTracks,
         "artist_track_count": artistTrackCount,
     };
-
-
-
-
     return trackArtistStatsInput;
 }
 
@@ -148,10 +144,6 @@ function generateAllYears(startDate: string, endDate: string): string[] {
     return years;
 }
 
-
-
-
-
 function analyseTrackDateBar(name: string, tracks) {
     // Group the tracks by year and count the number of tracks in each year
     const groupedData = tracks.reduce((acc, track) => {
@@ -166,10 +158,13 @@ function analyseTrackDateBar(name: string, tracks) {
     const endDate = Math.max(...allReleaseDates.map(date => new Date(date).getTime()));
 
     // Generate all years between the earliest and latest release dates
-    const allYears = generateAllYears(new Date(startDate).toISOString(), new Date(endDate).toISOString());
+    const allYears = generateAllYears(
+        new Date(startDate).toISOString(), 
+        new Date(endDate).toISOString()
+    );
 
     // For each year, either use the count from `groupedData` or set it to 0 if no tracks
-    const labels = allYears.sort();  // Sort the years in ascending order
+    const labels = allYears.sort();
     const dataValues = labels.map(label => groupedData[label]);
 
     createReleaseDateChart(name);
@@ -205,7 +200,8 @@ async function main() {
         const ccAccessToken = getCCStoredAccessTokens();
 
         // friendmas stats
-        const friendmasPlaylistTracksData = await getPlaylistTracksData(ccAccessToken.access_token, "7y74PC03oAdN1LVA5fYN2q", 50)
+        const friendmasPlaylistTracksData = await getPlaylistTracksData(
+            ccAccessToken.access_token, "7y74PC03oAdN1LVA5fYN2q", 50)
         anaylseGeneralStats("friendsmas", friendmasPlaylistTracksData);
         analyseTrackDateBar("friendsmas", friendmasPlaylistTracksData);
 

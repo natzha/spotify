@@ -15,12 +15,8 @@ export async function clientCredential(clientId: string, clientSecret: string) {
     });
 
     const cc_access_token = await response.json();
-    // cc_access_token.expires_in = Date.now() + cc_access_token.expires_in * 1000; // datenow in ms
-
     storeCCAccessTokens(cc_access_token)
-    // return cc_access_token;
 }
-
 
 /////////////////////////////////////////
 // Redirect to Spotify authorisation page - uses Authentication code 
@@ -61,7 +57,7 @@ export async function redirectToAuthCodeFlowPKCE(clientId: string, redirect_uri:
     document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
 
-
+// requests spotify for the access token
 export async function getAccessToken(clientId: string,
     clientSecret: string,
     redirect_uri: string,
@@ -89,6 +85,7 @@ export async function getAccessToken(clientId: string,
     return access_token
 }
 
+// requests spotify for the access token using PKCCE
 export async function getAccessTokenPKCE(clientId: string,
     redirect_uri: string,
     code: string): Promise<AccessToken> {
@@ -114,6 +111,7 @@ export async function getAccessTokenPKCE(clientId: string,
     return access_token
 }
 
+// using the refresh token, update the access token
 export async function refreshAccessToken(clientId: string,
     clientSecret: string,
     refresh_token: string) {
@@ -139,6 +137,7 @@ export async function refreshAccessToken(clientId: string,
     return access_token;
 }
 
+// using the refresh token, update the access token using pkce
 export async function refreshAccessTokenPKCE(clientId: string, refresh_token: string) {
     const verifier = localStorage.getItem("verifier");
     const tokenUrl = 'https://accounts.spotify.com/api/token';
@@ -167,6 +166,7 @@ export async function refreshAccessTokenPKCE(clientId: string, refresh_token: st
     return access_token;
 }
 
+// store access tokens locally
 export function storeAccessTokens(access_token: AccessToken): void {
     localStorage.setItem("token_access", access_token.access_token);
     access_token.expires_in = Date.now() + access_token.expires_in * 1000; // datenow in ms
@@ -176,6 +176,7 @@ export function storeAccessTokens(access_token: AccessToken): void {
     localStorage.setItem("token_type", access_token.token_type);
 }
 
+// store client credentials access tokens locally
 export function storeCCAccessTokens(access_token: AccessToken): void {
     localStorage.setItem("cc_token_access", access_token.access_token);
     access_token.expires_in = Date.now() + access_token.expires_in * 1000; // datenow in ms
@@ -185,6 +186,7 @@ export function storeCCAccessTokens(access_token: AccessToken): void {
     localStorage.setItem("cc_token_type", access_token.token_type);
 }
 
+// get access tokens from users locally
 export function getStoredAccessTokens(): AccessToken {
     return {
         "access_token": localStorage.getItem('token_access')!,
@@ -195,6 +197,7 @@ export function getStoredAccessTokens(): AccessToken {
     };
 }
 
+// get client crendential access tokens from users locally
 export function getCCStoredAccessTokens(): AccessToken {
     return {
         "access_token": localStorage.getItem('cc_token_access')!,
@@ -205,7 +208,7 @@ export function getCCStoredAccessTokens(): AccessToken {
     };
 }
 
-
+// check if an access token has expired (can handle client credential as well)
 export async function checkExpiryPKCE(accessToken: AccessToken): Promise<AccessToken> {
     if (!(Date.now() < accessToken.expires_in!)) {
         console.log("Token out of date, refreshing now...")

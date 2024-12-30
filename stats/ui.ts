@@ -137,7 +137,7 @@ export function populateArtistCountBar(name: string, labels, dataValues) {
             plugins: {
                 title: {
                     display: true,
-                    text: name.toUpperCase() + ': Number of Tracks for each Artist', // Chart title text
+                    text: name.toUpperCase() + ': Number of Tracks for each Artist',
                     font: {
                         size: 20, // Set font size for the title
                         weight: 'bold', // Set font weight (bold)
@@ -203,7 +203,7 @@ export function populateReleaseDateBar(name: string, labels, dataValues) {
                 x: {
                     title: {
                         display: true,
-                        text: 'Year', // Set label to 'Year'
+                        text: 'Year',
                     },
                 },
                 y: {
@@ -217,14 +217,14 @@ export function populateReleaseDateBar(name: string, labels, dataValues) {
             plugins: {
                 title: {
                     display: true,
-                    text: name.toUpperCase() + ': Number of Tracks Released by Year', // Chart title text
+                    text: name.toUpperCase() + ': Number of Tracks Released by Year',
                     font: {
-                        size: 20, // Set font size for the title
-                        weight: 'bold', // Set font weight (bold)
+                        size: 20,
+                        weight: 'bold',
                     },
                     padding: {
-                        top: 10, // Padding above the title
-                        bottom: 10, // Padding below the title
+                        top: 10,
+                        bottom: 10,
                     },
                 },
                 tooltip: {
@@ -283,18 +283,22 @@ export function populateReleaseDateScatter(data) {
                 tooltip: {
                     enabled: false, // Disable the default tooltip
                     external: (context) => {
-                        const tooltipEl = document.getElementById('release-date-div') as HTMLElement;
-                        const tooltipName = document.getElementById('release-date-track-name') as HTMLElement;
-                        const tooltipArtists = document.getElementById('release-date-track-artist') as HTMLElement;
-                        const tooltipDate = document.getElementById('release-date-track-date') as HTMLElement;
+                        const tooltipEl = document.getElementById(
+                            'release-date-div') as HTMLElement;
+                        const tooltipName = document.getElementById(
+                            'release-date-track-name') as HTMLElement;
+                        const tooltipArtists = document.getElementById(
+                            'release-date-track-artist') as HTMLElement;
+                        const tooltipDate = document.getElementById(
+                            'release-date-track-date') as HTMLElement;
 
-                        // Check if there are any data points to show
                         // Check if there are any data points to show
                         const dataPoints = context.tooltip.dataPoints;
                         if (dataPoints && dataPoints.length > 0) {
-                            // In a scatter plot, we expect only one data point under the cursor
-                            const dataPoint = dataPoints[0]; // The data point being hovered
-                            const track = data[dataPoint.dataIndex]; // Get the track from the data array using the index
+                            // The data point being hovered
+                            const dataPoint = dataPoints[0];
+                            // Get the track from the data array using the index
+                            const track = data[dataPoint.dataIndex];
 
                             if (track) {
                                 tooltipName.innerHTML = `Track: ${track.name}`;
@@ -308,7 +312,8 @@ export function populateReleaseDateScatter(data) {
                                 console.error('Track not found for index:', dataPoint.dataIndex);
                             }
                         } else {
-                            tooltipEl.style.display = 'none'; // Hide tooltip if no valid data point
+                            // Hide tooltip if no valid data point
+                            tooltipEl.style.display = 'none';
                         }
                     },
                 },

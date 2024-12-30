@@ -43,7 +43,8 @@ export function isAnyPropertyEmpty<T>(obj: T): boolean {
     for (let key in obj) {
         const value = obj[key];
   
-        // Check if the value is "null" (string), null, undefined, an empty object, an empty array, or an empty string
+        // Check if the value is "null" (string), null, undefined, an empty
+        // object, an empty array, or an empty string
         if (
             value === "undefined" ||
             value === "null" ||
