@@ -8,9 +8,9 @@ import {
 } from '../src/spotifyApi';
 import { isAnyPropertyEmpty } from '../src/utils';
 import {
-    createArtistCountChart, createGeneralStats, createReleaseDateChart,
-    createTrackArtistStats, populateArtistCountBar, populateReleaseDateBar,
-    populateReleaseDateScatter
+    createArtistGenreStats, createGeneralStats, createReleaseDateChart,
+    createTrackArtistStats, populateArtistCountBar, populateGenreCountBar,
+    populateReleaseDateBar, populateReleaseDateScatter
 } from './ui';
 
 // sort by artists
@@ -18,14 +18,13 @@ import {
 
 // do they hard listen to one artist or many artists? how many songs from the same artist - pie chart?
 // do thye like listening to albums or individual songs? how many songs from the same album
-// how genre diverse are they? - use artist genre
-// popularity as a dot chart
+// popularity against artists songs played as a dot chart
 
 
 function anaylseGeneralStats(name: string, tracks) {
     const popularityInput = analyseTrackPopularity(tracks);
     createGeneralStats(name, popularityInput);
-    return
+    return;
 }
 
 function analyseTrackArtists(name: string, tracks) {
@@ -39,11 +38,11 @@ function analyseTrackArtists(name: string, tracks) {
     const sortedData = labels.map((artist, index) => ({
         artist,
         tracks: dataValues[index]
-    })).sort((a, b) => b.tracks - a.tracks); 
+    })).sort((a, b) => b.tracks - a.tracks);
 
     // Reorganize sorted data for Chart.js
-    const sortedLabels = sortedData.map(item => item.artist);
-    const sortedDataValues = sortedData.map(item => item.tracks);
+    const sortedLabels = sortedData.map(item => item.artist).slice(0, 20);
+    const sortedDataValues = sortedData.map(item => item.tracks).slice(0, 20);
 
     // store all data in usable
     const trackArtistStatsInput = {
@@ -58,9 +57,7 @@ function analyseTrackArtists(name: string, tracks) {
 
     // get how many tracks by the same artists and graph
     createTrackArtistStats(name, trackArtistStatsInput);
-    createArtistCountChart(name);
     populateArtistCountBar(name, trackArtistStatsInput);
-    return trackArtistStatsInput;
 }
 
 function getArtistTrackCount(tracks) {
@@ -83,10 +80,71 @@ function getArtistTrackCount(tracks) {
     return artistTrackCount;
 }
 
-function analyseTrackPopularity(tracks) {
+function analyseArtistGenres(name: string, artists) {
+    const artistGenreCount = getArtistGenreCount(artists);
 
+    // artist name as labels, track count as datavalues
+    const labels = Object.keys(artistGenreCount);
+    const dataValues = Object.values(artistGenreCount);
+
+    // sort the genres by number of artists in descending order
+    const sortedData = labels.map((genre, index) => ({
+        genre,
+        numArtists: dataValues[index]
+    })).sort((a, b) => b.numArtists - a.numArtists);
+
+    // Reorganize sorted data for Chart.js
+    const sortedLabels = sortedData.map(item => item.genre).slice(0, 30);
+    const sortedDataValues = sortedData.map(item => item.numArtists).slice(0, 30);
+
+    // // Group remaining elements and sum their values
+    // const remainingValues = sortedData.map(item => item.numArtists).slice(29);
+    // const summedRestValue = remainingValues.reduce((accumulator, currentValue) => {
+    //     return accumulator + currentValue
+    // },0);
+
+    // sortedLabels.push("Others");
+    // sortedDataValues.push(summedRestValue);
+
+    // store all data in usable
+    const artistGenreStatsInput = {
+        "most_freq_artist": sortedLabels[0],
+        "most_freq_count": sortedDataValues[0],
+        "artist_track_count": artistGenreCount,
+        "labels": labels,
+        "dataValues": dataValues,
+        "sortedLabels": sortedLabels,
+        "sortedDataValues": sortedDataValues,
+    };
+
+    // get how many tracks by the same artists and graph
+    createArtistGenreStats(name, artistGenreStatsInput);
+    populateGenreCountBar(name, artistGenreStatsInput);
+}
+
+
+function getArtistGenreCount(artists) {
+    const artistGenreCount = {};
+
+    // Loop through each artist
+    artists.forEach(artist => {
+        // Increment the count for the genre, artist can have multiple genres
+        const genresInArtist = artist.genres;
+        if (genresInArtist === undefined) { return; }
+
+        // Increment the count for each artist that appeared in the track
+        genresInArtist.forEach(genre => {
+            artistGenreCount[genre] = (artistGenreCount[genre] || 0) + 1;
+        });
+        // artistGenreCount[genresInArtist] = (artistGenreCount[genresInArtist] || 0) + 1;
+    });
+
+    return artistGenreCount;
+}
+
+function analyseTrackPopularity(tracks) {
     //sort popularity and song
-    const popularityArray = tracks.map(track => { track.popularity });
+    const popularityArray = tracks.map(track => track.popularity);
 
     // get average popularity
     const average = array => array.reduce((a, b) => a + b) / array.length;
@@ -103,16 +161,6 @@ function analyseTrackPopularity(tracks) {
         return prev.popularity < curr.popularity ? prev : curr;
     });
     const popularityMin = min(tracks);
-
-    // place into x and y
-    // const data = tracks.map((track) => ({
-    //     x: parseReleaseDate(track.album.release_date).getTime(),
-    //     y: 1,
-    //     name: track.name,
-    //     artists: track.artists.map(artist => artist.name).join(', '),
-    //     date: track.album.release_date,
-    // }));
-
 
     const popularityInput = {
         "average": popularityAverage,
@@ -237,10 +285,13 @@ async function main() {
 
     // get users top 250 songs and artists
     const topTracksData = await getTopTracksData(accessToken, 200, 3);
+    console.log("top tracks: ", topTracksData);
     const topArtistsData = await getTopArtistsData(accessToken, 200, 3);
+    console.log("top artsts: ", topArtistsData);
 
     anaylseGeneralStats("top-tracks", topTracksData);
-    analyseTrackArtists("top-tracks", topTracksData)
+    analyseTrackArtists("top-tracks", topTracksData);
+    analyseArtistGenres("top-tracks", topArtistsData);
     analyseTrackDateBar("top-tracks", topTracksData);
 
     createLogoutButton(logout);
