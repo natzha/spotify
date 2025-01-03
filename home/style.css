@@ -3,6 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  word-wrap: break-word;
 }
 
 /* General body styling */
@@ -23,39 +24,31 @@ h1 {
 }
 
 /* Profile section styling */
-#user-top-artists-section,
-#new-album-releases-section,
-#top-global-tracks-section,
-#friendmas-section,
-#profile,
-#top5 {
+.standard-section {
   background-color: #ffffff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 40px;
+  word-wrap: break-word;
 }
 
 /* Profile section title */
-#user-top-artists-section h2,
-#new-album-releases-section h2,
-#top-global-tracks-section h2,
-#friendmas-section h2,
-#profile h2,
-#top5 h2 {
+.standard-section h2 {
   font-size: 1.5rem;
   color: #1DB954;
   margin-bottom: 15px;
 }
 
 /* Avatar styling */
-#avatar {
+#profile-image {
   display: block;
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: auto;
   background-color: #ccc;
   border-radius: 50%;
   margin-bottom: 20px;
+  object-fit: cover;
 }
 
 /* Styling for the list of data */
@@ -80,11 +73,7 @@ ul li a:hover {
   color: #1ed760;
 }
 
-#user-top-artists-list,
-#new-releases-list,
-#friendmas-list,
-#top-50-tracks,
-#track-list {
+.standard-list {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
@@ -96,25 +85,17 @@ ul li a:hover {
   margin: 0;
 }
 
-#user-top-artists-list li,
-#new-releases-list li,
-#friendmas-list li,
-#top-50-tracks li,
-#track-list li {
+.standard-list li {
   display: flex;
   align-items: center;
-  /* Align image and text horizontally */
   gap: 15px;
-  /* Space between image and text */
   width: calc(33.333% - 10px);
-  /* Each item takes up 1/3 of the width minus gap space */
   background-color: #f9f9f9;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
   box-sizing: border-box;
   text-align: left;
-  /* Align text to the left */
 }
 
 #artist-image-div img {
@@ -178,19 +159,15 @@ ul li a:hover {
 /* Responsive design for medium screens */
 @media (max-width: 1024px) {
 
-  #user-top-artists-list li,
-  #new-releases-list li,
-  #friendmas-list li,
-  #top-50-tracks li,
-  #track-list li {
+  .standard-list li {
     width: calc(50% - 10px);
     /* On medium screens, items take up 50% of the width */
   }
 
-  #artist-image-div img,
-  #album-image-div img {
+  .standard-image,
+  .standard-image img {
     max-width: 120px;
-    /* Adjust image size for medium screens */
+    max-height: 120px;
   }
 
   #album-name,
@@ -203,11 +180,7 @@ ul li a:hover {
 /* Responsive design for small screens */
 @media (max-width: 768px) {
 
-  #user-top-artists-list li,
-  #new-releases-list li,
-  #friendmas-list li,
-  #top-50-tracks li,
-  #track-list li {
+  .standard-list li {
     width: calc(100% - 10px);
     /* On small screens, each item takes up 100% of the width */
     flex-direction: row;
@@ -216,10 +189,10 @@ ul li a:hover {
     /* Keep elements aligned horizontally */
   }
 
-  #artist-image-div img,
-  #album-image-div img {
+  .standard-image,
+  .standard-image img {
     max-width: 100px;
-    /* Adjust image size for small screens */
+    max-height: 100px;
   }
 
   #artist-info,
@@ -238,11 +211,7 @@ ul li a:hover {
 /* Very small screens (e.g., very narrow devices like mobile phones) */
 @media (max-width: 480px) {
 
-  #user-top-artists-list,
-  #new-releases-list li,
-  #friendmas-list li,
-  #top-50-tracks li,
-  #track-list li {
+  .standard-list li {
     width: 100%;
     /* Items take up full width on very small screens */
     flex-direction: row;
@@ -251,10 +220,10 @@ ul li a:hover {
     /* Keep elements aligned horizontally */
   }
 
-  #artist-image-div img,
-  #album-image-div img {
+  .standard-image,
+  .standard-image img {
     max-width: 80px;
-    /* Adjust image size for very small screens */
+    max-height: 80px;
   }
 
   #album-name,

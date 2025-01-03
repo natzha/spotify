@@ -1,12 +1,12 @@
 import { isAnyPropertyEmpty } from "../src/utils";
 import { createLoginButton, createLogoutButton } from "../src/global_ui";
-import { 
+import {
     getStoredAccessTokens, clientCredential, getCCStoredAccessTokens,
-    checkExpiryPKCE, logout 
+    checkExpiryPKCE, logout
 } from '../src/auth';
 import {
-    fetchProfile, getNewReleasesData, getPlaylistTracksData, getTopArtistsData, 
-    getTopTracksData 
+    fetchProfile, getNewReleasesData, getPlaylistTracksData, getTopArtistsData,
+    getTopTracksData
 } from '../src/spotifyApi';
 import {
     createListSection, createTopListSection, populateArtists, populateTracks,
