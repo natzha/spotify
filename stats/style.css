@@ -68,3 +68,13 @@ h1 {
     z-index: 10;
     max-width: 250px;
 }
+
+/* Very small screens (e.g., very narrow devices like mobile phones) */
+@media (max-width: 600px) {
+
+    .chart-container {
+        position: relative;
+        width: 80vw;
+        height: 100vh;
+    }
+  }
