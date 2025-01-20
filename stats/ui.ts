@@ -85,7 +85,8 @@ export function createTrackArtistStats(name: string, trackArtistStatsInput) {
 
 export function populateArtistCountBar(name: string, trackArtistStatsInput) {
     const ctx = document.getElementById(name + '-artist-count-canvas') as HTMLCanvasElement;
-    new Chart(ctx, {
+
+    var config = {
         type: 'bar',
         data: {
             labels: trackArtistStatsInput.sortedLabels, // X-axis: artist names
@@ -101,11 +102,23 @@ export function populateArtistCountBar(name: string, trackArtistStatsInput) {
             maintainAspectRatio: false,
             // responsive: true,
             scales: {
-                y: {
-                    beginAtZero: true, // Start the Y-axis at 0
+                x: {
                     ticks: {
-                        stepSize: 1 // Each tick step is 1 for better readability
+                        autoSkip: false,
+                        font: {
+                            size: 16,
+                        }
                     }
+                },
+                y: {
+                    ticks: {
+                        autoSkip: false,
+                        font: {
+                            size: 16,
+                        },
+                        stepSize: 2, // Each tick step is 1 for better readability
+                    },
+                    beginAtZero: true, // Start the Y-axis at 0
                 }
             },
             plugins: {
@@ -127,7 +140,11 @@ export function populateArtistCountBar(name: string, trackArtistStatsInput) {
                 }
             }
         }
-    });
+    };
+
+    updateChartType(config);
+
+    new Chart(ctx, config);
 }
 
 export function createArtistGenreStats(name: string, artistGenreStatsInput) {
@@ -159,7 +176,8 @@ export function createArtistGenreStats(name: string, artistGenreStatsInput) {
 
 export function populateGenreCountBar(name: string, artistGenreStatsInput) {
     const ctx = document.getElementById(name + '-genre-count-canvas') as HTMLCanvasElement;
-    new Chart(ctx, {
+
+    var config = {
         type: 'doughnut',
         data: {
             labels: artistGenreStatsInput.sortedLabels, // X-axis: artist names
@@ -197,11 +215,20 @@ export function populateGenreCountBar(name: string, artistGenreStatsInput) {
                     },
                 },
                 legend: {
-                    display: true // Display the chart legend
+                    display: true, // Display the chart legend
+                    labels: {
+                        font: {
+                            size: 12,
+                        }
+                    }
                 }
             }
         }
-    });
+    };
+
+    updateChartType(config);
+
+    new Chart(ctx, config);
 }
 
 export function createReleaseDateChart(name: string) {
@@ -230,7 +257,7 @@ export function createReleaseDateChart(name: string) {
     chartDiv.appendChild(trackDate);
 
     chartContainer.appendChild(chartCanvas);
-    
+
     trackReleaseStatsDiv.appendChild(chartContainer);
     trackReleaseStatsDiv.appendChild(chartDiv);
     document.body.appendChild(trackReleaseStatsDiv);
@@ -238,7 +265,8 @@ export function createReleaseDateChart(name: string) {
 
 export function populateReleaseDateBar(name: string, labels, dataValues) {
     const ctx = document.getElementById(name + "-canvas") as HTMLCanvasElement;
-    const chart = new Chart(ctx, {
+
+    var config = {
         type: 'bar', // Change chart type to 'bar' for column graph
         data: {
             labels: labels, // Labels for the x-axis (years)
@@ -259,12 +287,22 @@ export function populateReleaseDateBar(name: string, labels, dataValues) {
                         display: true,
                         text: 'Year',
                     },
+                    ticks: {
+                        font: {
+                            size: 16,
+                        },
+                    },
                 },
                 y: {
                     beginAtZero: true,
                     title: {
                         display: true,
                         text: 'Number of Tracks',
+                    },
+                    ticks: {
+                        font: {
+                            size: 16,
+                        },
                     },
                 },
             },
@@ -293,7 +331,10 @@ export function populateReleaseDateBar(name: string, labels, dataValues) {
                 },
             },
         },
-    });
+    }
+
+    updateChartType(config);
+    const chart = new Chart(ctx, config);
 }
 
 export function populateReleaseDateScatter(data) {
@@ -387,5 +428,98 @@ export function populateReleaseDateScatter(data) {
 }
 
 
+// function to switch between vertical and horizontal bar chart based on screen width
+function updateChartType(config) {
+
+    if (config.type === "bar") {
+        if (window.innerWidth < 600) {
+            if (config.options.indexAxis !== "y") {
+                config.options.indexAxis = "y";
+                config.options.scales.x = config.options.scales.y;
+                config.options.scales.y.beginAtZero = true;
+                config.options.plugins.title.font.size = 14;
+                config.options.scales.x.ticks.font.size = 8;
+                config.options.scales.y.ticks.font.size = 8;
+            }
+        } else {
+            if (config.options.indexAxis === "y") {
+                config.options.indexAxis = "x";
+                config.options.scales.y = config.options.scales.x;
+                config.options.scales.x = {
+                    beginAtZero: true
+                };
+                config.options.plugins.title.font.size = 24;
+            }
+        }
+    } else if (config.type === "doughnut") {
+        if (window.innerWidth < 600) {
+            config.options.plugins.legend.labels.font.size = 8;
+        }
+    }
+}
+
+function setDefaultChartConfig() {
+    // user will need to fill in type, data.datasets.label, data.datasets.data
+    // options.plugins.title.text
 
 
+    const config = {
+        data: {
+            datasets: [{
+                label: '',
+                backgroundColor: '#1DB954', // Bar color
+                borderColor: '#1DB954', // Bar border color
+                borderWidth: 1,
+            }],
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                    },
+                    ticks: {
+                        font: {
+                            size: 20,
+                        },
+                        autoSkip: false,
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                    },
+                    ticks: {
+                        font: {
+                            size: 20,
+                        },
+                        autoSkip: false,
+                    },
+                },
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    color: '#1DB954',
+                    font: {
+                        size: 24, // Set font size for the title
+                        weight: 'bold', // Set font weight (bold)
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 10,
+                    },
+                },
+                tooltip: {
+                    callbacks: {
+                    },
+                },
+            },
+        },
+    }
+    return config;
+}

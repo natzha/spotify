@@ -2,6 +2,7 @@ export function createTopListSection(sectionId: string, listId: string, sectionT
     // Create new album releases section
     const section = document.createElement('section');
     section.id = sectionId;
+    section.className = "standard-section";
 
     // Create title
     const heading = document.createElement('h2');
@@ -83,6 +84,7 @@ export function createTopListSection(sectionId: string, listId: string, sectionT
     // Create list
     const htmlList = document.createElement('ul');
     htmlList.id = listId;
+    htmlList.className = "standard-list";
     section.appendChild(htmlList);
     document.body.appendChild(section);
 
@@ -96,6 +98,7 @@ export function createListSection(sectionId: string, listId: string, sectionTitl
     // Create new album releases section
     const section = document.createElement('section');
     section.id = sectionId;
+    section.className = "standard-section";
 
     // Create title
     const heading = document.createElement('h2');
@@ -135,6 +138,7 @@ export function createListSection(sectionId: string, listId: string, sectionTitl
     // Create list
     const htmlList = document.createElement('ul');
     htmlList.id = listId;
+    htmlList.className = "standard-list"
     section.appendChild(htmlList);
     document.body.appendChild(section);
 
@@ -161,6 +165,7 @@ export function populateAlbums(listId: string, albums: Album[]): void {
         albumImageLink.href = album.external_urls.spotify;
         albumImageLink.appendChild(albumImage);
         albumImageDiv.id = "album-image-div";
+        albumImageDiv.className = "standard-image";
         albumImageDiv.appendChild(albumImageLink);
 
         // Create a span to display the artist names
@@ -221,6 +226,7 @@ export function populateArtists(listId: string, artists: SpotifyApi.ArtistObject
         artistImageLink.href = artist.external_urls.spotify;
         artistImageLink.appendChild(artistImage);
         artistImageDiv.id = "artist-image-div";
+        artistImageDiv.className = "standard-image";
         artistImageDiv.appendChild(artistImageLink);
 
         // Create a span to display the artist names
@@ -266,6 +272,7 @@ export function createProfile(): void {
     // Create profile section
     const profileSection = document.createElement('section');
     profileSection.id = 'profile';
+    profileSection.className = 'standard-section';
 
     const profileHeading = document.createElement('h2');
     profileHeading.innerHTML = 'Logged in as <span class="displayName"></span>';
@@ -314,7 +321,9 @@ export function populateUI(profile: UserProfile): void {
 
 export function populateProfile(profile: UserProfile): void {
     if (profile.images[0]) {
-        const profileImage = new Image(200, 200);
+        const profileImage = new Image(120, 120);
+        profileImage.id = "profile-image";
+        profileImage.className = "standard-image";
         profileImage.src = profile.images[0].url;
         document.getElementById("avatar")!.appendChild(profileImage);
     }
@@ -347,6 +356,7 @@ export function populateTracks(listId: string, topTracks: Track[]): void {
         albumImageLink.href = track.album.external_urls.spotify;
         albumImageLink.appendChild(albumImage);
         albumImageDiv.id = "album-image-div"
+        albumImageDiv.className = "standard-image";
         albumImageDiv.appendChild(albumImageLink);
 
         const trackInfo = document.createElement("div");
