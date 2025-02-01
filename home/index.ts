@@ -1,17 +1,10 @@
 import { isAnyPropertyEmpty } from "../src/utils";
 import { createLoginButton, createLogoutButton } from "../src/global_ui";
-import {
-    getStoredAccessTokens, clientCredential, getCCStoredAccessTokens,
-    checkExpiryPKCE, logout
-} from '../src/auth';
-import {
-    fetchProfile, getNewReleasesData, getPlaylistTracksData, getTop, getTopArtistsData,
-    getTopTracksData
-} from '../src/spotifyApi';
-import {
-    createListSection, createTopListSection, populateArtists, populateTracks,
-    populateProfile, populateAlbums, createProfile, populateUI, createStatsButton
-} from './ui';
+import { getStoredAccessTokens, clientCredential, getCCStoredAccessTokens, checkExpiryPKCE, logout } from '../src/auth';
+import { fetchProfile, getNewReleasesData, getPlaylistTracksData, getTop, getTopArtistsData, getTopTracksData } from '../src/spotifyApi';
+import { populateArtists, populateTracks, populateProfile, populateAlbums, createProfile, populateUI, createStatsButton } from './ui';
+import { createListSection } from './ui/CreateListSection';
+import { createTopListSection } from './ui/CreateTopListSection';
 
 async function main() {
 
@@ -32,12 +25,6 @@ async function main() {
         createListSection("friendmas-section", "friendmas-list",
             "Friendmas Playlist", populateFriendmasPlaylistOnChangeEvent);
 
-        // try {
-        //     createListSection("top-global-tracks-section", "top-50-tracks", 
-        //          "Top Global Tracks", populateGlobalTracksOnChangeEvent);
-        // } catch {
-        //     console.log("Error: Failed to create list for Top Global Tracks");
-        // }
         return;
 
     } else {
@@ -50,10 +37,8 @@ async function main() {
         populateProfile(profile);
 
         // top tracks and artists sections
-        createTopListSection("top5", "track-list", "Your Top Songs",
-            populateTracksOffsetOnChangeEvent);
-        createTopListSection("user-top-artists-section", "user-top-artists-list",
-            "Your Top Artists", populateArtistOffsetOnChangeEvent);
+        createTopListSection("top5", "track-list", "Your Top Songs", populateTracksOffsetOnChangeEvent);
+        createTopListSection("user-top-artists-section", "user-top-artists-list", "Your Top Artists", populateArtistOffsetOnChangeEvent);
 
         // make all profile names show
         populateUI(profile);
@@ -95,10 +80,18 @@ async function populateFriendmasPlaylistOnChangeEvent(numItems: number) {
 var numItemsConst = 20
 var allTracks: any = [];
 var allArtists: any = [];
-var allTracks: any = [];
-var allTracks: any = [];
+// var allTracks: any = [];
+// var allTracks: any = [];
 
-async function populateTracksOffsetOnChangeEvent(offset: number, numDuration: number) {
+async function populateTracksOffsetOnChangeEvent(inputObject: any) {
+
+    var offset = inputObject.itemMultiplier;
+    var numDuration = inputObject.duration;
+    var clearArray = inputObject.clearArray;
+
+    if (clearArray) {
+        allTracks = [];
+    }
     const accessToken = getStoredAccessTokens();
     var duration = "";
     switch (numDuration) {
@@ -123,10 +116,27 @@ async function populateTracksOffsetOnChangeEvent(offset: number, numDuration: nu
     const topTracks = await getTop(accessToken, "tracks", duration, numItemsConst, offset * numItemsConst);
     allTracks = allTracks.concat(topTracks.items);
     populateTracks("track-list", allTracks);
+
+    if (allTracks.length == topTracks.total) {
+        return true;
+    } else {
+        return false;
+    }
+
 }
 
-async function populateArtistOffsetOnChangeEvent(offset: number, numDuration: number) {
-    const accessToken = getStoredAccessTokens();
+async function populateArtistOffsetOnChangeEvent(inputObject: any) {
+
+    var offset = inputObject.itemMultiplier;
+    var numDuration = inputObject.duration;
+    var clearArray = inputObject.clearArray;
+
+    console.log("AO: all artist before- ", allArtists);
+    if (clearArray) {
+        allArtists = [];
+    }
+    console.log("AO: all artist after - ", allArtists);
+    console.log("AO: start change event");
     var duration = "";
     switch (numDuration) {
         case 1: {
@@ -146,9 +156,28 @@ async function populateArtistOffsetOnChangeEvent(offset: number, numDuration: nu
             break;
         }
     }
+
+    console.log("AO: duration - ", duration);
+
+    const accessToken = getStoredAccessTokens();
+
+    console.log("AO: at - ", accessToken);
+
     const topArtists = await getTop(accessToken, "artists", duration, numItemsConst, offset * numItemsConst);
+    console.log("AO: top artist - ", topArtists);
+    console.log("AO: all artist - ", allArtists);
     allArtists = allArtists.concat(topArtists.items);
     populateArtists("user-top-artists-list", allArtists);
+
+    console.log("AO: end change event");
+
+
+    if (allArtists.length == topArtists.total) {
+        return true;
+    } else {
+        return false;
+    }
+
 }
 
 async function populateAlbumOffsetOnChangeEvent(numItems: number) {
@@ -164,21 +193,5 @@ async function populateFriendmasPlaylistOffsetOnChangeEvent(numItems: number) {
     populateTracks("friendmas-list", friendmasPlaylistTracksData);
 }
 
-
-
-
-// async function populateGlobalTracksOnChangeEvent(event: any) {
-//     // the token from https://everynoise.com/worldbrowser.cgi since my token
-//     // wouldnt display spotify owned editorial playlists
-//     // https://developer.spotify.com/blog/2024-11-27-changes-to-the-web-api
-//     try {
-//         const token_spotify_global = "BQAiahDa9iawb4R-S3qipuy62HPqoHA9IjCrgkkFGfgfBFJ802GSll7YXWrfiqSEhR8GJk-PbJZYk5mwXVuBLjoNHbiqNFgvNiJci_Cj9F1o91GNKIY";
-//         const top50SongsPlaylistTracks = await getPlaylistTracks(token_spotify_global, "37i9dQZEVXbNG2KDcFcKOF", event.target.value);
-//         const top50SongsTracks: Track[] = top50SongsPlaylistTracks.items.map((item: any) => item.track);
-//         populateTracks("top-50-tracks", top50SongsTracks)
-//     } catch {
-//         console.log("Error: failed to get Top Global Tracks");
-//     }
-// }
 
 await main();

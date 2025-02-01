@@ -20,6 +20,9 @@ VITE_SPOTIFY_REDIRECT_URI
 ```
 
 ## TODO
+PROBLEM: everything between UI and functions are too coupled
+
+
 - given the top 5-10 songs, find a similar public playlist
 - refactor global UI to have a top banner/bottom banner 
 
