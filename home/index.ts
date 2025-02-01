@@ -5,7 +5,7 @@ import {
     checkExpiryPKCE, logout
 } from '../src/auth';
 import {
-    fetchProfile, getNewReleasesData, getPlaylistTracksData, getTopArtistsData,
+    fetchProfile, getNewReleasesData, getPlaylistTracksData, getTop, getTopArtistsData,
     getTopTracksData
 } from '../src/spotifyApi';
 import {
@@ -51,9 +51,9 @@ async function main() {
 
         // top tracks and artists sections
         createTopListSection("top5", "track-list", "Your Top Songs",
-            populateTracksOnChangeEvent);
+            populateTracksOffsetOnChangeEvent);
         createTopListSection("user-top-artists-section", "user-top-artists-list",
-            "Your Top Artists", populateArtistOnChangeEvent);
+            "Your Top Artists", populateArtistOffsetOnChangeEvent);
 
         // make all profile names show
         populateUI(profile);
@@ -91,6 +91,81 @@ async function populateFriendmasPlaylistOnChangeEvent(numItems: number) {
         ccAccessToken.access_token, "7y74PC03oAdN1LVA5fYN2q", numItems);
     populateTracks("friendmas-list", friendmasPlaylistTracksData);
 }
+
+var numItemsConst = 20
+var allTracks: any = [];
+var allArtists: any = [];
+var allTracks: any = [];
+var allTracks: any = [];
+
+async function populateTracksOffsetOnChangeEvent(offset: number, numDuration: number) {
+    const accessToken = getStoredAccessTokens();
+    var duration = "";
+    switch (numDuration) {
+        case 1: {
+            duration = "short_term"
+            break;
+        }
+        case 2: {
+            duration = "medium_term"
+            break;
+        }
+        case 3: {
+            duration = "long_term"
+            break;
+        }
+        default: {
+            duration = "short_term"
+            break;
+        }
+    }
+
+    const topTracks = await getTop(accessToken, "tracks", duration, numItemsConst, offset * numItemsConst);
+    allTracks = allTracks.concat(topTracks.items);
+    populateTracks("track-list", allTracks);
+}
+
+async function populateArtistOffsetOnChangeEvent(offset: number, numDuration: number) {
+    const accessToken = getStoredAccessTokens();
+    var duration = "";
+    switch (numDuration) {
+        case 1: {
+            duration = "short_term"
+            break;
+        }
+        case 2: {
+            duration = "medium_term"
+            break;
+        }
+        case 3: {
+            duration = "long_term"
+            break;
+        }
+        default: {
+            duration = "short_term"
+            break;
+        }
+    }
+    const topArtists = await getTop(accessToken, "artists", duration, numItemsConst, offset * numItemsConst);
+    allArtists = allArtists.concat(topArtists.items);
+    populateArtists("user-top-artists-list", allArtists);
+}
+
+async function populateAlbumOffsetOnChangeEvent(numItems: number) {
+    const ccAccessToken = getCCStoredAccessTokens();
+    const albumsList = await getNewReleasesData(ccAccessToken, numItems);
+    populateAlbums("new-releases-list", albumsList);
+}
+
+async function populateFriendmasPlaylistOffsetOnChangeEvent(numItems: number) {
+    const ccAccessToken = getCCStoredAccessTokens();
+    const friendmasPlaylistTracksData = await getPlaylistTracksData(
+        ccAccessToken.access_token, "7y74PC03oAdN1LVA5fYN2q", numItems);
+    populateTracks("friendmas-list", friendmasPlaylistTracksData);
+}
+
+
+
 
 // async function populateGlobalTracksOnChangeEvent(event: any) {
 //     // the token from https://everynoise.com/worldbrowser.cgi since my token

@@ -86,10 +86,16 @@ export function createTopListSection(sectionId: string, listId: string, sectionT
     htmlList.id = listId;
     htmlList.className = "standard-list";
     section.appendChild(htmlList);
+    
+    // show more button
+    var itemMultiplier = 1;
+    // trigger the onchange event
+    var buttonElement = createShowMoreItemsButton(itemMultiplier, listId, Number(sliderDuration.value), onChangeAction);
+    section.appendChild(buttonElement)
     document.body.appendChild(section);
 
     // trigger a slider event
-    sliderNumItems.dispatchEvent(new Event('change'));
+    // sliderNumItems.dispatchEvent(new Event('change'));
     sliderDuration.dispatchEvent(new Event('change'));
 }
 
@@ -145,6 +151,23 @@ export function createListSection(sectionId: string, listId: string, sectionTitl
     // trigger a slider event
     sliderNumItems.dispatchEvent(new Event('change'));
 }
+
+export function createShowMoreItemsButton(itemMultiplier: number, listId: string, duration: number, onChangeAction: any) {
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "button-container";
+    const statsButton = document.createElement("button");
+    statsButton.id = listId + "show-more-button";
+    statsButton.className = "button-class";
+    statsButton.textContent = "See More Items";
+
+    statsButton.addEventListener("click", () => {
+        onChangeAction(itemMultiplier, duration);
+        itemMultiplier += 1;
+    });
+    buttonContainer.appendChild(statsButton);
+    return buttonContainer;
+}
+
 
 
 export function populateAlbums(listId: string, albums: Album[]): void {
