@@ -1,7 +1,7 @@
 import { isAnyPropertyEmpty } from "../src/utils";
 import { createLoginButton, createLogoutButton } from "../src/global_ui";
 import { getStoredAccessTokens, clientCredential, getCCStoredAccessTokens, checkExpiryPKCE, logout } from '../src/auth';
-import { fetchProfile, getNewReleasesData, getPlaylistTracksData, getTop, getTopArtistsData, getTopTracksData } from '../src/spotifyApi';
+import { fetchProfile, getNewReleasesData, getPlaylistTracksData, getTop} from '../src/spotifyApi';
 import { populateArtists, populateTracks, populateProfile, populateAlbums, createProfile, populateUI, createStatsButton } from './ui';
 import { createListSection } from './ui/CreateListSection';
 import { createTopListSection } from './ui/CreateTopListSection';
@@ -155,18 +155,18 @@ async function populateArtistOffsetOnChangeEvent(inputObject: any) {
 
 }
 
-async function populateAlbumOffsetOnChangeEvent(numItems: number) {
-    const ccAccessToken = getCCStoredAccessTokens();
-    const albumsList = await getNewReleasesData(ccAccessToken, numItems);
-    populateAlbums("new-releases-list", albumsList);
-}
+// async function populateAlbumOffsetOnChangeEvent(numItems: number) {
+//     const ccAccessToken = getCCStoredAccessTokens();
+//     const albumsList = await getNewReleasesData(ccAccessToken, numItems);
+//     populateAlbums("new-releases-list", albumsList);
+// }
 
-async function populateFriendmasPlaylistOffsetOnChangeEvent(numItems: number) {
-    const ccAccessToken = getCCStoredAccessTokens();
-    const friendmasPlaylistTracksData = await getPlaylistTracksData(
-        ccAccessToken.access_token, "7y74PC03oAdN1LVA5fYN2q", numItems);
-    populateTracks("friendmas-list", friendmasPlaylistTracksData);
-}
+// async function populateFriendmasPlaylistOffsetOnChangeEvent(numItems: number) {
+//     const ccAccessToken = getCCStoredAccessTokens();
+//     const friendmasPlaylistTracksData = await getPlaylistTracksData(
+//         ccAccessToken.access_token, "7y74PC03oAdN1LVA5fYN2q", numItems);
+//     populateTracks("friendmas-list", friendmasPlaylistTracksData);
+// }
 
 
 await main();
