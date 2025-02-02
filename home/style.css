@@ -100,7 +100,7 @@ ul li a:hover {
 
 #artist-image-div img {
   width: 150px;
-  height: auto;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
   /* Ensure the image covers the container without distortion */
