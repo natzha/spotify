@@ -131,12 +131,9 @@ async function populateArtistOffsetOnChangeEvent(inputObject: any) {
     var numDuration = inputObject.duration;
     var clearArray = inputObject.clearArray;
 
-    console.log("AO: all artist before- ", allArtists);
     if (clearArray) {
         allArtists = [];
     }
-    console.log("AO: all artist after - ", allArtists);
-    console.log("AO: start change event");
     var duration = "";
     switch (numDuration) {
         case 1: {
@@ -157,20 +154,10 @@ async function populateArtistOffsetOnChangeEvent(inputObject: any) {
         }
     }
 
-    console.log("AO: duration - ", duration);
-
     const accessToken = getStoredAccessTokens();
-
-    console.log("AO: at - ", accessToken);
-
     const topArtists = await getTop(accessToken, "artists", duration, numItemsConst, offset * numItemsConst);
-    console.log("AO: top artist - ", topArtists);
-    console.log("AO: all artist - ", allArtists);
     allArtists = allArtists.concat(topArtists.items);
     populateArtists("user-top-artists-list", allArtists);
-
-    console.log("AO: end change event");
-
 
     if (allArtists.length == topArtists.total) {
         return true;
