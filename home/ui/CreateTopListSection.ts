@@ -1,5 +1,3 @@
-import { createShowMoreItemsButton } from "./CreateShowMoreItemsButton";
-
 export function createTopListSection(sectionId: string, listId: string, sectionTitle: string, onChangeAction: any) {
     // Create new album releases section
     const section = document.createElement('section');
@@ -34,15 +32,31 @@ export function createTopListSection(sectionId: string, listId: string, sectionT
         "clearArray": false,
     }
 
+    // create button
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "button-container";
+    const showMoreButton = document.createElement("button");
+    showMoreButton.id = listId + "show-more-button";
+    showMoreButton.className = "button-class";
+    showMoreButton.textContent = "See More Items";
+    let isProcessing = false;
+
     // duration event listener
-    sliderDuration.addEventListener("change", () => {
+    sliderDuration.addEventListener("change", async() => {
         // clear the ul list (array), set multiple back to zero, change the duration 
         itemMultiplier = 0;
         onChangeInputs.itemMultiplier = itemMultiplier;
         onChangeInputs.duration = Number(sliderDuration.value);
         onChangeInputs.clearArray = true;
-        onChangeAction(onChangeInputs);
+        var setButtonInvisible = await onChangeAction(onChangeInputs);
         onChangeInputs.clearArray = false;
+
+        if (setButtonInvisible) {
+            buttonContainer.removeChild(showMoreButton);
+        } else {
+            showMoreButton.textContent = "See More Items";
+            buttonContainer.appendChild(showMoreButton);
+        }
 
         // edit the ui display to be readable
         const displayCounterElements = document.querySelectorAll(".slider-duration-counter" + sectionId);
@@ -68,8 +82,6 @@ export function createTopListSection(sectionId: string, listId: string, sectionT
             };
             (element as HTMLElement).innerText = duration;
         });
-
-        
     });
 
     // add slider to section
@@ -84,8 +96,26 @@ export function createTopListSection(sectionId: string, listId: string, sectionT
     section.appendChild(htmlList);
     
     // show more button
-    var buttonElement = createShowMoreItemsButton(listId, onChangeAction, onChangeInputs);
-    section.appendChild(buttonElement)
+    // event listener triggers action on click
+    showMoreButton.addEventListener("click", async() => {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        onChangeInputs.itemMultiplier += 1;
+        var setButtonInvisible = await onChangeAction(onChangeInputs);
+
+        if (setButtonInvisible) {
+            buttonContainer.removeChild(showMoreButton);
+        } else {
+            showMoreButton.textContent = "See More Items";
+            buttonContainer.appendChild(showMoreButton);
+        }
+
+        isProcessing = false;
+    });
+
+    buttonContainer.appendChild(showMoreButton);
+    section.appendChild(buttonContainer);
 
     // set section into document
     document.body.appendChild(section);

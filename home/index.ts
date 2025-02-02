@@ -52,18 +52,6 @@ async function main() {
 //////////////////////////////////////////////
 ///////////// on change events ///////////////
 //////////////////////////////////////////////
-async function populateTracksOnChangeEvent(numItems: number, numDuration: number) {
-    const accessToken = getStoredAccessTokens();
-    const tracks = await getTopTracksData(accessToken, numItems, numDuration);
-    populateTracks("track-list", tracks);
-}
-
-async function populateArtistOnChangeEvent(numItems: number, numDuration: number) {
-    const accessToken = getStoredAccessTokens();
-    const artists = await getTopArtistsData(accessToken, numItems, numDuration);
-    populateArtists("user-top-artists-list", artists);
-}
-
 async function populateAlbumOnChangeEvent(numItems: number) {
     const ccAccessToken = getCCStoredAccessTokens();
     const albumsList = await getNewReleasesData(ccAccessToken, numItems);
